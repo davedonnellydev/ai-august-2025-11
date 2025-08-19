@@ -5,13 +5,21 @@ import { z } from 'zod';
 import { MODEL } from '@/app/config/constants';
 import { ServerRateLimiter } from '@/app/lib/utils/api-helpers';
 
-const apiKey = process.env.OPENAI_API_KEY
-
-const openai = new OpenAI({
-  apiKey
-});
-
 export async function POST(request: NextRequest) {
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error('OpenAI API key not configured');
+      return NextResponse.json(
+        { error: 'Translation service temporarily unavailable' },
+        { status: 500 }
+      );
+    }
+
+    const openai = new OpenAI({
+      apiKey,
+    });
+
   try {
     // Get client IP
     const ip =
