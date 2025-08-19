@@ -210,10 +210,53 @@ export const sampleResults: AxeResults = {
           all: [],
           none: [],
           impact: 'serious',
+          html: '<button class="btn">Submit</button>',
+          target: ['button.btn'],
+          failureSummary:
+            'Fix any of the following:\n  Element has insufficient color contrast of 3.04 (foreground color: #06a694, background color: #ffffff, font size: 10.8pt (14.4px), font weight: bold). Expected contrast ratio of 4.5:1',
+        },
+        {
+          any: [],
+          all: [],
+          none: [],
+          impact: 'serious',
           html: '<a href="/about">About</a>',
           target: ['.nav-item:nth-child(2) > a[href$="about"]'],
           failureSummary:
             'Fix any of the following:\n  Element has insufficient color contrast of 3.04 (foreground color: #06a694, background color: #ffffff, font size: 10.8pt (14.4px), font weight: bold). Expected contrast ratio of 4.5:1',
+        },
+      ],
+    },
+    {
+      id: 'image-alt',
+      impact: 'critical',
+      tags: [
+        'cat.text-alternatives',
+        'wcag2a',
+        'wcag111',
+        'section508',
+        'section508.1.a',
+        'TTv5',
+        'TT6.a',
+        'EN-301-549',
+        'EN-9.1.1.1',
+        'ACT',
+      ],
+      description:
+        'Ensures <img> elements have alternate text or a role of none or presentation',
+      help: 'Images must have alternate text',
+      helpUrl:
+        'https://dequeuniversity.com/rules/axe/4.8/image-alt?application=axeAPI',
+      nodes: [
+        {
+          any: [],
+          all: [],
+          none: [],
+          impact: 'critical',
+          html: '<img src="logo.png" />',
+          target: ['img[src="logo.png"]'],
+          failureSummary:
+            'Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element\'s default semantics were not overridden with role="none" or role="presentation"',
         },
       ],
     },

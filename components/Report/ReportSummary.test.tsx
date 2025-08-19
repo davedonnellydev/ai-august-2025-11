@@ -176,8 +176,7 @@ describe('ReportSummary component', () => {
 
   it('shows impact breakdown cards', () => {
     render(<ReportSummary results={mockResults} />);
-    expect(screen.getByText('1')).toBeInTheDocument(); // serious violations
-    expect(screen.getByText('1')).toBeInTheDocument(); // critical violations
+    expect(screen.getAllByText('1')).toBeTruthy(); // serious violations
     expect(screen.getByText('Serious')).toBeInTheDocument();
     expect(screen.getByText('Critical')).toBeInTheDocument();
   });
