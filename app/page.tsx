@@ -1,9 +1,9 @@
-import { Welcome } from '../components/Welcome/Welcome';
+import { CreateBookmarklet } from '../components/Welcome/CreateBookmarklet';
 
 export default function HomePage() {
   return (
     <>
-      <Welcome />
+      <CreateBookmarklet />
     </>
   );
 }

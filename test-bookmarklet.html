@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page for Accessibility Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .image-without-alt {
+            width: 200px;
+            height: 150px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .form-without-label {
+            margin: 20px 0;
+        }
+        .form-without-label input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Page for Accessibility Checker</h1>
+    
+    <p>This page contains various accessibility issues to test the bookmarklet functionality.</p>
+    
+    <div class="test-section">
+        <h2>Images without alt text</h2>
+        <div class="image-without-alt">Image without alt text</div>
+        <div class="image-without-alt">Another image without alt text</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Form without proper labels</h2>
+        <div class="form-without-label">
+            <input type="text" placeholder="Name">
+            <input type="email" placeholder="Email">
+            <button class="button">Submit</button>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Color contrast issues</h2>
+        <p style="color: #ccc; background: #f0f0f0; padding: 10px;">
+            This text has poor color contrast and may be hard to read.
+        </p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Missing heading structure</h2>
+        <p>This paragraph should probably be a heading.</p>
+        <h4>This heading is too low in the hierarchy</h4>
+    </div>
+    
+    <div class="test-section">
+        <h2>Interactive elements</h2>
+        <button class="button">Button 1</button>
+        <button class="button">Button 2</button>
+        <a href="#" class="button">Link styled as button</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>Instructions for testing</h2>
+        <ol>
+            <li>Create the bookmarklet using the main application</li>
+            <li>Drag the bookmarklet to your bookmarks bar</li>
+            <li>Click the bookmarklet while on this page</li>
+            <li>Review the accessibility results in the overlay</li>
+            <li>Test the download and copy JSON functionality</li>
+        </ol>
+    </div>
+    
+    <script>
+        // Add some JavaScript to test dynamic content
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a button dynamically
+            const dynamicButton = document.createElement('button');
+            dynamicButton.textContent = 'Dynamically Added Button';
+            dynamicButton.className = 'button';
+            dynamicButton.style.marginTop = '20px';
+            document.body.appendChild(dynamicButton);
+        });
+    </script>
+</body>
+</html>

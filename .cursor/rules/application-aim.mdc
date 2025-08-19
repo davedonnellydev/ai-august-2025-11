@@ -1,0 +1,9 @@
+---
+description: Outlines the aim of the application we are building in this project
+globs:
+alwaysApply: false
+---
+The aim of this application is to facilitate accessibility checking on any webpage the user requires. This app will:
+- allow the user to install a bookmarklet in their browser which will inject `axe-core` into whatever page the user is on and shows results in-page via a lightweight overlay, keeping the overlay accessible (with a focus trap and Escape to close). 
+- have an option for users to paste or upload html, which can then be rendered inside a sandboxed, same-origin iframe - the app can then inject `axe-core` into that iframe’s document and run. 
+- display an option for users to 'Use AI summaries' which allow the app to send the results of the `axe-core` analysis to the OpenAI API and retrieve suggestions for how to fix the issues. 

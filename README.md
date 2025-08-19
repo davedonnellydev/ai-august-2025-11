@@ -3,22 +3,22 @@
 ![Last Commit](https://img.shields.io/github/last-commit/davedonnellydev/ai-august-2025-11)
 
 **📆 Date**: 19/Aug/2025  
-**🎯 Project Objective**: Paste your site URL or code, AI suggests accessibility improvements.  
-**🚀 Features**: Input website URL; Fetch and analyze the page’s HTML; Show list of detected accessibility issues (e.g., missing alt text, contrast issues, missing labels); Suggest AI-generated fixes; Clear, user-friendly report output  
-**🛠️ Tech used**: Next.js, TypeScript, OpenAI APIs, axe-core & Pa11y  
+**🎯 Project Objective**: Create a bookmarklet that injects axe-core into any webpage and provides accessibility checking with results overlay.  
+**🚀 Features**: Generate bookmarklet for browser; Inject axe-core from CDN; Run accessibility analysis; Display results in lightweight overlay; Download/Copy results as JSON; Focus trap and keyboard navigation support  
+**🛠️ Tech used**: Next.js, TypeScript, Mantine UI, axe-core, vanilla JavaScript  
 **▶️ Live Demo**: _[https://your-demo-url.com](https://your-demo-url.com)_  
 _(Link will be added after deployment)_
 
 ## 🗒️ Summary
 
 **Lessons learned**  
-_A little summary of learnings_
+_Building a bookmarklet-based accessibility checker provides a lightweight, cross-platform solution that works on any webpage without requiring installation or permissions._
 
 **Blockers**  
-_Note any blockers here_
+_None encountered during initial development_
 
 **Final thoughts**  
-_Any final thoughts here_
+_This approach offers a great user experience by allowing users to check accessibility on any webpage they visit, making it a valuable tool for developers and accessibility advocates._
 
 This project has been built as part of my AI August App-A-Day Challenge. You can read more information on the full project here: [https://github.com/davedonnellydev/ai-august-2025-challenge](https://github.com/davedonnellydev/ai-august-2025-challenge).
 
@@ -26,6 +26,25 @@ This project has been built as part of my AI August App-A-Day Challenge. You can
 
 ![CI](https://github.com/davedonnellydev/ai-august-2025-11/actions/workflows/npm_test.yml/badge.svg)  
 _Note: Test suite runs automatically with each push/merge._
+
+## 🚀 How It Works
+
+The Accessibility Checker creates a bookmarklet that you can add to your browser's bookmarks bar. When clicked on any webpage, it:
+
+1. **Injects axe-core** from CDN if not already loaded
+2. **Runs accessibility analysis** on the current page
+3. **Displays results** in a lightweight overlay
+4. **Provides options** to download or copy results as JSON
+5. **Maintains accessibility** with focus trap and keyboard navigation
+
+### Features
+
+- **Lightweight**: Uses vanilla JavaScript and CSS for speed
+- **Accessible**: Focus trap, Escape key to close, keyboard navigation
+- **Cross-platform**: Works in any modern browser
+- **No installation**: Just drag to bookmarks bar
+- **Detailed results**: Shows violations, passes, and affected elements
+- **Export options**: Download JSON or copy to clipboard
 
 ## Quick Start
 
@@ -37,35 +56,37 @@ _Note: Test suite runs automatically with each push/merge._
    npm install
    ```
 
-2. **Set up environment variables:**
-
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your values
-   ```
-
-3. **Start development:**
+2. **Start development:**
 
    ```bash
    npm run dev
    ```
 
-4. **Run tests:**
+3. **Create bookmarklet:**
+   - Open the application in your browser
+   - Click "Create Accessibility Checker Bookmarklet"
+   - Drag the generated bookmarklet to your bookmarks bar
+
+4. **Test on any webpage:**
+   - Navigate to any website
+   - Click your accessibility checker bookmarklet
+   - Review the accessibility results
+
+5. **Run tests:**
    ```bash
    npm test
    ```
 
+## 🧪 Testing the Bookmarklet
+
+A test page (`test-bookmarklet.html`) is included to verify the bookmarklet functionality:
+
+1. Open `test-bookmarklet.html` in your browser
+2. Use the bookmarklet to run accessibility checks
+3. Verify that accessibility issues are detected
+4. Test the download and copy JSON functionality
+
 ## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```bash
-# OpenAI API (for AI features)
-OPENAI_API_KEY=your_openai_api_key_here
-
-```
 
 ### Key Configuration Files
 
@@ -74,7 +95,6 @@ OPENAI_API_KEY=your_openai_api_key_here
 - `theme.ts` – Mantine theme customization
 - `eslint.config.mjs` – ESLint rules (Mantine + TS)
 - `jest.config.cjs` – Jest testing config
-- `.nvmrc` – Node.js version
 
 ### Path Aliases
 
