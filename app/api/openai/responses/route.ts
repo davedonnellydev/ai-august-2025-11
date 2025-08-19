@@ -5,8 +5,10 @@ import { z } from 'zod';
 import { MODEL } from '@/app/config/constants';
 import { ServerRateLimiter } from '@/app/lib/utils/api-helpers';
 
+const apiKey = process.env.OPENAI_API_KEY
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey
 });
 
 export async function POST(request: NextRequest) {
