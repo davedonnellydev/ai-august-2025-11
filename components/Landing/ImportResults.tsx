@@ -22,7 +22,7 @@ import {
 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 
-import { AxeResults } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
 
 export function ImportResults() {
   const [jsonInput, setJsonInput] = useState('');
@@ -57,7 +57,9 @@ export function ImportResults() {
 
   const handleFileUpload = useCallback(
     async (file: File) => {
-      if (!file) return;
+      if (!file) {
+        return;
+      }
 
       setIsProcessing(true);
       setError('');

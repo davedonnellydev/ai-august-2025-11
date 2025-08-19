@@ -25,7 +25,7 @@ import {
   IconChevronRight,
 } from '@tabler/icons-react';
 
-import { AxeResults } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
 
 interface IssuesTableProps {
   results: AxeResults;
@@ -69,7 +69,7 @@ export function IssuesTable({ results }: IssuesTableProps) {
     setExpandedRows(newExpanded);
   };
 
-  const getImpactColor = (impact: string) => {
+  const getImpactColor = (impact: string | null | undefined) => {
     switch (impact) {
       case 'critical':
         return 'red';
@@ -84,7 +84,10 @@ export function IssuesTable({ results }: IssuesTableProps) {
     }
   };
 
-  const getImpactLabel = (impact: string) => {
+  const getImpactLabel = (impact: string | null | undefined) => {
+    if (!impact) {
+      return 'Unknown';
+    }
     return impact.charAt(0).toUpperCase() + impact.slice(1);
   };
 
@@ -146,7 +149,6 @@ export function IssuesTable({ results }: IssuesTableProps) {
             <Table.Tbody>
               {filteredViolations.map((violation) => {
                 const isExpanded = expandedRows.has(violation.id);
-                const firstNode = violation.nodes[0];
 
                 return (
                   <Table.Tr key={violation.id}>
@@ -228,7 +230,9 @@ export function IssuesTable({ results }: IssuesTableProps) {
         {/* Expanded Row Details */}
         {filteredViolations.map((violation) => {
           const isExpanded = expandedRows.has(violation.id);
-          if (!isExpanded) return null;
+          if (!isExpanded) {
+            return null;
+          }
 
           return (
             <Collapse key={`${violation.id}-details`} in={isExpanded}>

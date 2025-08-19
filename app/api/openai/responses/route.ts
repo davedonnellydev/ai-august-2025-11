@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { zodTextFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 import { MODEL } from '@/app/config/constants';
-import { InputValidator, ServerRateLimiter } from '@/app/lib/utils/api-helpers';
+import { ServerRateLimiter } from '@/app/lib/utils/api-helpers';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,58 +25,96 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { input } = await request.json();
+    const body = await request.json();
+    const { violations, totalViolations, url } = body;
 
-    // Enhanced validation
-    const textValidation = InputValidator.validateText(input, 2000);
-    if (!textValidation.isValid) {
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: textValidation.error },
-        { status: 400 }
-      );
-    }
-
-    // Environment validation
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      console.error('OpenAI API key not configured');
-      return NextResponse.json(
-        { error: 'Translation service temporarily unavailable' },
+        { error: 'OpenAI API key not configured' },
         { status: 500 }
       );
     }
 
-    const client = new OpenAI({
-      apiKey,
-    });
-
-    // Enhanced content moderation
-    const moderatedText = await client.moderations.create({
-      input,
-    });
-
-    const { flagged, categories } = moderatedText.results[0];
-
-    if (flagged) {
-      const keys: string[] = Object.keys(categories);
-      const flaggedCategories = keys.filter(
-        (key: string) => categories[key as keyof typeof categories]
-      );
+    if (!violations || violations.length === 0) {
       return NextResponse.json(
-        {
-          error: `Content flagged as inappropriate: ${flaggedCategories.join(', ')}`,
-        },
+        { error: 'No violations to analyze' },
         { status: 400 }
       );
     }
 
-    const instructions: string =
-      'You are a helpful assistant who knows general knowledge about the world. Keep your responses to one or two sentances, maximum.';
+    const Fix = z.object({
+      rank: z.number(),
+      description: z.string(),
+    });
+    const Step = z.object({
+      order: z.number(),
+      description: z.string(),
+    });
+    const AiInsights = z.object({
+      topFixes: z.array(Fix),
+      nextSteps: z.array(Step),
+      priorityActions: z.object({
+        high: z.string(),
+        medium: z.string(),
+        low: z.string(),
+      }),
+      estimatedEffort: z.string(),
+    });
 
-    const response = await client.responses.create({
+    // Create a comprehensive prompt for the AI
+    const instructions = `You are an accessibility expert. You will be given data on accessibility violations for a website. Analyze the given accessibility violations and provide actionable advice.
+
+Please provide a structured response in the following JSON format:
+{
+  "topFixes": [
+    "5 specific, actionable fixes that developers can implement immediately",
+    "Each fix should be clear and specific to the violations found"
+  ],
+  "nextSteps": [
+    "3-4 strategic next steps for improving accessibility",
+    "Focus on long-term improvements and best practices"
+  ],
+  "priorityActions": [
+    "High: Most critical issues to fix first",
+    "Medium: Important but less urgent issues",
+    "Low: Minor issues that can be addressed later"
+  ],
+  "estimatedEffort": "Low/Medium/High based on the complexity and number of violations"
+}
+
+Focus on practical, implementable solutions. Be specific about what elements need to be changed and why.`;
+
+    const input = `URL: ${url}
+Total Violations: ${totalViolations}
+
+Violations:
+${violations
+  .map(
+    (v: any, i: number) =>
+      `${i + 1}. ${v.id} (${v.impact} impact): ${v.description}
+   Help: ${v.help}
+   Tags: ${v.tags.join(', ')}
+   Elements affected: ${v.nodeCount}
+   Nodes: [${v.nodes.map((node: any, i: number) => {
+     return `{
+        index: ${i},
+        impact: ${node.impact},
+        failureSummary: ${node.failureSummary},
+        html: ${node.html},
+        targets: [${node.target.join(',')}]
+   },`;
+   })}]`
+  )
+  .join('\n\n')}
+    `;
+
+    const response = await openai.responses.parse({
       model: MODEL,
       instructions,
       input,
+      text: {
+        format: zodTextFormat(AiInsights, 'ai_insights'),
+      },
     });
 
     if (response.status !== 'completed') {
@@ -78,11 +122,12 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      response: response.output_text || 'Response recieved',
-      originalInput: input,
+      response: response.output_parsed || 'Response parsed',
+      originalInput: body,
       remainingRequests: ServerRateLimiter.getRemaining(ip),
     });
   } catch (error) {
+    // OpenAI API error
     const errorMessage =
       error instanceof Error ? error.message : 'OpenAI failed';
     return NextResponse.json({ error: errorMessage }, { status: 500 });

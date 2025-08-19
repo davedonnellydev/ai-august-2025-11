@@ -7,7 +7,7 @@ import { ReportSummary } from './ReportSummary';
 import { IssuesTable } from './IssuesTable';
 import { AIInsights } from './AIInsights';
 
-import { AxeResults } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
 
 interface ReportViewProps {
   results: AxeResults;
@@ -55,15 +55,15 @@ export function ReportView({ results }: ReportViewProps) {
           url: window.location.href,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        // Error sharing
       }
     } else {
       // Fallback: copy URL to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        alert('Report URL copied to clipboard!');
+        // Report URL copied to clipboard
       } catch (err) {
-        alert('Failed to copy URL. Please copy manually from the address bar.');
+        // Failed to copy URL
       }
     }
   };

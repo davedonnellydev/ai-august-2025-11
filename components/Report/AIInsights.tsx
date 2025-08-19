@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Paper,
   Title,
@@ -20,10 +20,11 @@ import {
   IconArrowRight,
   IconInfoCircle,
   IconCheck,
-  IconX,
 } from '@tabler/icons-react';
 
-import { AxeResults, AIAnalysis } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
+import { AIAnalysis } from '../../types/accessibility';
+import { ClientRateLimiter } from '@/app/lib/utils/api-helpers';
 
 interface AIInsightsProps {
   results: AxeResults;
@@ -34,12 +35,25 @@ export function AIInsights({ results }: AIInsightsProps) {
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [error, setError] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [remainingRequests, setRemainingRequests] = useState(0);
 
   const { violations } = results;
+
+  // Update remaining requests on component mount and after translations
+  useEffect(() => {
+    setRemainingRequests(ClientRateLimiter.getRemainingRequests());
+  }, []);
 
   const analyzeWithAI = async () => {
     if (violations.length === 0) {
       setError('No violations to analyze');
+      return;
+    }
+
+    // Check rate limit before proceeding
+    if (ClientRateLimiter.getRemainingRequests() <= 0) {
+      setError('Rate limit exceeded. Please try again later.');
+      setRemainingRequests(ClientRateLimiter.getRemainingRequests());
       return;
     }
 
@@ -51,18 +65,19 @@ export function AIInsights({ results }: AIInsightsProps) {
       const analysisData = {
         violations: violations.map((v) => ({
           id: v.id,
-          impact: v.impact,
+          impact: v.impact || 'unknown',
           description: v.description,
           help: v.help,
           tags: v.tags,
           nodeCount: v.nodes.length,
+          nodes: v.nodes,
         })),
         totalViolations: violations.length,
         url: results.url,
       };
 
       // Call the OpenAI API endpoint
-      const response = await fetch('/api/openai/analyze', {
+      const response = await fetch('/api/openai/responses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,8 +90,11 @@ export function AIInsights({ results }: AIInsightsProps) {
       }
 
       const data = await response.json();
-      setAiAnalysis(data);
+      setAiAnalysis(data.response);
+      console.log(data);
       setIsExpanded(true);
+      // Update remaining requests after successful translation
+      setRemainingRequests(ClientRateLimiter.getRemainingRequests());
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to analyze with AI'
@@ -86,18 +104,18 @@ export function AIInsights({ results }: AIInsightsProps) {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return 'red';
-      case 'medium':
-        return 'orange';
-      case 'low':
-        return 'blue';
-      default:
-        return 'gray';
-    }
-  };
+  //   const getPriorityColor = (priority: string) => {
+  //     switch (priority.toLowerCase()) {
+  //       case 'high':
+  //         return 'red';
+  //       case 'medium':
+  //         return 'orange';
+  //       case 'low':
+  //         return 'blue';
+  //       default:
+  //         return 'gray';
+  //     }
+  //   };
 
   if (violations.length === 0) {
     return (
@@ -176,10 +194,10 @@ export function AIInsights({ results }: AIInsightsProps) {
                     <Paper key={index} p="md" withBorder bg="green.0">
                       <Group gap="sm">
                         <Badge color="green" variant="light">
-                          {index + 1}
+                          {fix.rank}
                         </Badge>
                         <Text size="sm" style={{ flex: 1 }}>
-                          {fix}
+                          {fix.description}
                         </Text>
                       </Group>
                     </Paper>
@@ -206,7 +224,7 @@ export function AIInsights({ results }: AIInsightsProps) {
                           Step {index + 1}
                         </Badge>
                         <Text size="sm" style={{ flex: 1 }}>
-                          {step}
+                          {step.description}
                         </Text>
                       </Group>
                     </Paper>
@@ -223,18 +241,32 @@ export function AIInsights({ results }: AIInsightsProps) {
                     Priority Order
                   </Title>
                   <Stack gap="xs">
-                    {aiAnalysis.priorityOrder.map((item, index) => (
-                      <Group key={index} gap="sm">
-                        <Badge
-                          color={getPriorityColor(item.split(':')[0])}
-                          variant="light"
-                          size="sm"
-                        >
-                          {index + 1}
+                    <Paper p="md" withBorder>
+                      <Group gap="sm">
+                        <Badge color="red" variant="light" size="sm">
+                          HIGH{' '}
                         </Badge>
-                        <Text size="sm">{item}</Text>
+                        <Text size="sm">{aiAnalysis.priorityActions.high}</Text>
                       </Group>
-                    ))}
+                    </Paper>
+                    <Paper p="md" withBorder>
+                      <Group gap="sm">
+                        <Badge color="orange" variant="light" size="sm">
+                          MEDIUM
+                        </Badge>
+                        <Text size="sm">
+                          {aiAnalysis.priorityActions.medium}
+                        </Text>
+                      </Group>
+                    </Paper>
+                    <Paper p="md" withBorder>
+                      <Group gap="sm">
+                        <Badge color="blue" variant="light" size="sm">
+                          LOW
+                        </Badge>
+                        <Text size="sm">{aiAnalysis.priorityActions.low}</Text>
+                      </Group>
+                    </Paper>
                   </Stack>
                 </div>
 
@@ -258,6 +290,9 @@ export function AIInsights({ results }: AIInsightsProps) {
                 </div>
               </Group>
             </Stack>
+            <Text p="md" m="md" size="xs" ta="center">
+              You have {remainingRequests} remaining AI analyses.
+            </Text>
           </Collapse>
         )}
 
@@ -266,7 +301,8 @@ export function AIInsights({ results }: AIInsightsProps) {
             <IconBrain size={48} color="var(--mantine-color-gray-4)" />
             <Text c="dimmed" ta="center">
               Click "Analyze with AI" to get intelligent suggestions for fixing
-              your accessibility issues.
+              your accessibility issues. You have {remainingRequests} remaining
+              AI analyses.
             </Text>
           </Stack>
         )}

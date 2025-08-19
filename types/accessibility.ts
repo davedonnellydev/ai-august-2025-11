@@ -1,31 +1,20 @@
-export interface AxeResults {
-  violations: Array<{
-    id: string;
-    impact: string;
-    description: string;
-    help: string;
-    helpUrl: string;
-    tags: string[];
-    nodes: Array<{
-      html: string;
-      target: string[];
-    }>;
-  }>;
-  passes: Array<{
-    id: string;
-    impact: string;
-    description: string;
-    help: string;
-    helpUrl: string;
-    tags: string[];
-  }>;
-  timestamp: string;
-  url: string;
+interface Fix {
+  rank: number;
+  description: string;
+}
+
+interface Step {
+  order: number;
+  description: string;
 }
 
 export interface AIAnalysis {
-  topFixes: string[];
-  nextSteps: string[];
-  priorityOrder: string[];
+  topFixes: Fix[];
+  nextSteps: Step[];
+  priorityActions: {
+    high: string;
+    medium: string;
+    low: string;
+  };
   estimatedEffort: string;
 }

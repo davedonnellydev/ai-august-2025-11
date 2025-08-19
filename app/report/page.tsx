@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Container, Text, Alert, Button, Group } from '@mantine/core';
+import { Container, Text, Alert, Button } from '@mantine/core';
 import { IconArrowLeft, IconInfoCircle } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { ReportView } from '../../components/Report/ReportView';
 
-import { AxeResults } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
 
 export default function ReportPage() {
   const [results, setResults] = useState<AxeResults | null>(null);
@@ -21,7 +21,7 @@ export default function ReportPage() {
         const parsed = JSON.parse(storedResults);
         setResults(parsed);
       } catch (err) {
-        console.error('Failed to parse stored results:', err);
+        // Failed to parse stored results
       }
     }
     setLoading(false);
