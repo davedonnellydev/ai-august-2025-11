@@ -9,14 +9,9 @@ import {
   Badge,
   RingProgress,
 } from '@mantine/core';
-import {
-  IconAlertTriangle,
-  IconCheck,
-  IconInfo,
-  IconX,
-} from '@tabler/icons-react';
+import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-react';
 
-import { AxeResults } from '../../types/accessibility';
+import { AxeResults } from 'axe-core';
 
 interface ReportSummaryProps {
   results: AxeResults;
@@ -26,7 +21,7 @@ export function ReportSummary({ results }: ReportSummaryProps) {
   const { violations, passes } = results;
 
   // Group violations by impact
-  const violationsByImpact = violations.reduce(
+  const violationsByImpact = (violations || []).reduce(
     (acc, violation) => {
       const impact = violation.impact || 'unknown';
       acc[impact] = (acc[impact] || 0) + 1;
@@ -47,8 +42,8 @@ export function ReportSummary({ results }: ReportSummaryProps) {
     critical: { color: 'red', icon: IconX, label: 'Critical' },
     serious: { color: 'orange', icon: IconAlertTriangle, label: 'Serious' },
     moderate: { color: 'yellow', icon: IconAlertTriangle, label: 'Moderate' },
-    minor: { color: 'blue', icon: IconInfo, label: 'Minor' },
-    unknown: { color: 'gray', icon: IconInfo, label: 'Unknown' },
+    minor: { color: 'blue', icon: IconAlertTriangle, label: 'Minor' },
+    unknown: { color: 'gray', icon: IconAlertTriangle, label: 'Unknown' },
   };
 
   return (
@@ -96,7 +91,9 @@ export function ReportSummary({ results }: ReportSummaryProps) {
           <Group gap="md">
             {Object.entries(impactConfig).map(([impact, config]) => {
               const count = violationsByImpact[impact] || 0;
-              if (count === 0) return null;
+              if (count === 0) {
+                return null;
+              }
 
               const IconComponent = config.icon;
               return (

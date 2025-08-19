@@ -256,13 +256,19 @@ export class ClientRateLimiter {
 
   static getRemainingRequests(): number {
     const now = Date.now();
-    const requests = JSON.parse(
-      localStorage.getItem('translation_requests') || '[]'
-    );
-    const validRequests = requests.filter(
-      (timestamp: number) => now - timestamp < STORAGE_WINDOW_MS
-    );
+    try {
+      const requests = JSON.parse(
+        localStorage.getItem('translation_requests') || '[]'
+      );
+      const validRequests = Array.isArray(requests)
+        ? requests.filter(
+            (timestamp: number) => now - timestamp < STORAGE_WINDOW_MS
+          )
+        : [];
 
-    return Math.max(0, MAX_REQUESTS - validRequests.length);
+      return Math.max(0, MAX_REQUESTS - validRequests.length);
+    } catch (error) {
+      return MAX_REQUESTS;
+    }
   }
 }
