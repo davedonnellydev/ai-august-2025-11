@@ -7,5 +7,12 @@ export default tseslint.config(
   {
     files: ['**/*.story.tsx'],
     rules: { 'no-console': 'off' },
+  },
+  {
+    files: ['**/CreateBookmarklet.tsx'],
+    rules: { 
+      'no-script-url': 'off',
+      'no-alert': 'off'
+    },
   }
 );
