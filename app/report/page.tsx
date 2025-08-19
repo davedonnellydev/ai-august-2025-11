@@ -15,14 +15,18 @@ export default function ReportPage() {
 
   useEffect(() => {
     // Get results from localStorage
-    const storedResults = localStorage.getItem('accessibilityResults');
-    if (storedResults) {
-      try {
-        const parsed = JSON.parse(storedResults);
-        setResults(parsed);
-      } catch (err) {
-        // Failed to parse stored results
+    try {
+      const storedResults = localStorage.getItem('accessibilityResults');
+      if (storedResults) {
+        try {
+          const parsed = JSON.parse(storedResults);
+          setResults(parsed);
+        } catch (err) {
+          // Failed to parse stored results
+        }
       }
+    } catch (err) {
+      // Failed to access localStorage
     }
     setLoading(false);
   }, []);

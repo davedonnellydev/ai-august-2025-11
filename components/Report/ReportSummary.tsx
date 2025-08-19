@@ -21,7 +21,7 @@ export function ReportSummary({ results }: ReportSummaryProps) {
   const { violations, passes } = results;
 
   // Group violations by impact
-  const violationsByImpact = violations.reduce(
+  const violationsByImpact = (violations || []).reduce(
     (acc, violation) => {
       const impact = violation.impact || 'unknown';
       acc[impact] = (acc[impact] || 0) + 1;

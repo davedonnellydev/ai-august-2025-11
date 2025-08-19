@@ -18,10 +18,20 @@ import {
   IconChevronRight,
 } from '@tabler/icons-react';
 
+import {
+  sampleResults,
+  sampleResultsNoViolations,
+} from '@/test-utils/mock-results';
+
 export function CreateBookmarklet() {
   const [bookmarkletCode, setBookmarkletCode] = useState('');
   const [codeExpanded, setCodeExpanded] = useState(false);
   const anchorRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    console.log('sampleResults: ', sampleResults);
+    console.log('sampleResultsNoViolations: ', sampleResultsNoViolations);
+  });
 
   const generateBookmarklet = () => {
     const code = `javascript:(function(){

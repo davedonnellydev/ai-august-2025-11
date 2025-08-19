@@ -3,7 +3,7 @@ import { MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
 
 export function render(ui: React.ReactNode) {
-  return testingLibraryRender(<>{ui}</>, {
+  return testingLibraryRender(ui, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
       <MantineProvider theme={theme} env="test">
         {children}
