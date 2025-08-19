@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Text,
-  Title,
   Code,
   Paper,
   Stack,
@@ -18,7 +17,6 @@ import {
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react';
-import classes from './Welcome.module.css';
 
 export function CreateBookmarklet() {
   const [bookmarkletCode, setBookmarkletCode] = useState('');
@@ -122,7 +120,7 @@ export function CreateBookmarklet() {
         appBtn.style.padding='10px 20px';
         appBtn.style.borderRadius='5px';
         appBtn.style.cursor='pointer';
-        appBtn.onclick=function(){window.open('http://localhost:3000/','_blank')};
+        appBtn.onclick=function(){window.open(window.location.origin,'_blank')};
         
         actions.appendChild(downloadBtn);
         actions.appendChild(copyBtn);
@@ -238,25 +236,35 @@ export function CreateBookmarklet() {
   }, [bookmarkletCode]);
 
   return (
-    <>
-      <Title className={classes.title} ta="center" mt={100}>
-        Website{' '}
-        <Text
-          inherit
-          variant="gradient"
-          component="span"
-          gradient={{ from: 'blue', to: 'green' }}
-        >
-          Accessibility Checker
-        </Text>
-      </Title>
+    <Paper p="xl" withBorder>
+      <Stack gap="lg">
+        <div>
+          <Text size="xl" fw={600} mb="xs">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5rem"
+              height="1.5rem"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginRight: '8px', verticalAlign: 'middle' }}
+            >
+              <path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" />
+            </svg>
+            Create Bookmarklet
+          </Text>
+          <Text c="dimmed" size="sm">
+            Generate a bookmarklet to check accessibility on any webpage
+          </Text>
+        </div>
 
-      <div style={{ maxWidth: 800, margin: '20px auto', padding: '20px' }}>
         <Alert
           icon={<IconInfoCircle size="1rem" />}
           title="How to use this tool"
           color="blue"
-          mb="xl"
         >
           This tool creates a bookmarklet that you can add to your browser's
           bookmarks bar. Right-click the button below and select "Bookmark
@@ -267,7 +275,7 @@ export function CreateBookmarklet() {
 
         {bookmarkletCode && (
           <Stack gap="md" align="center">
-            <Paper p="md" withBorder style={{ width: '100%' }}>
+            <div style={{ width: '100%' }}>
               <Stack gap="md" align="center">
                 <a
                   ref={anchorRef}
@@ -379,7 +387,7 @@ export function CreateBookmarklet() {
                   {bookmarkletCode}
                 </Code>
               </Collapse>
-            </Paper>
+            </div>
           </Stack>
         )}
 
@@ -387,7 +395,7 @@ export function CreateBookmarklet() {
           After adding the bookmarklet to your bookmarks bar, click it on any
           webpage to check accessibility.
         </Text>
-      </div>
-    </>
+      </Stack>
+    </Paper>
   );
 }
