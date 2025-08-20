@@ -10,7 +10,7 @@
 
 ## 🗒️ Summary
 
-Yesterday’s project was an **accessibility checker** — the idea being that you could enter a website URL, have it assessed against WCAG 2.0 standards, and receive advice on what wasn’t compliant and how to fix it.  
+This project was an interesting one - I decided to make an **accessibility checker**, the idea being that you could enter a website URL, have it assessed against WCAG 2.0 standards, and receive advice on what wasn’t compliant and how to fix it.  
 
 What I discovered is that there are already some excellent tools out there for this. Libraries like `axe-core` provide detailed accessibility reports, and while I added AI analysis on top, it didn’t feel like it contributed much beyond what was already in the raw report. To get real value from AI here, I’d need to send the *entire* assessment packet into the model — which quickly balloons token usage. This project left me wondering: where does AI meaningfully improve a workflow, and where does it just add unnecessary complexity?  
 
